@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>El Impostor — Edición Argentina</title>
+<meta name="description" content="Juego del Impostor con palabras bien argentinas. Armá la partida y jugá con tus amigos.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fascinate&family=Alfa+Slab+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --azul-noche:#101d38;
+    --azul-noche-2:#16274a;
+    --rojo:#c1272d;
+    --rojo-oscuro:#8f1c21;
+    --dorado:#e8b94b;
+    --dorado-suave:#f2d489;
+    --crema:#f7eedd;
+    --verde:#4c7a50;
+    --texto-oscuro:#2b2118;
+    --sombra: 0 10px 30px rgba(0,0,0,.35);
+    --radio: 22px;
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;
+    min-height:100%;
+    background:var(--azul-noche);
+    color:var(--crema);
+    font-family:'Nunito', sans-serif;
+  }
+
+  body{
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(232,185,75,.10), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(193,39,45,.12), transparent 45%),
+      repeating-linear-gradient(135deg, rgba(232,185,75,0.045) 0 2px, transparent 2px 34px),
+      repeating-linear-gradient(45deg, rgba(232,185,75,0.045) 0 2px, transparent 2px 34px);
+    min-height:100vh;
+    padding: 28px 16px 60px;
+    display:flex;
+    justify-content:center;
+  }
+
+  .wrap{ width:100%; max-width:520px; }
+
+  header.hero{ text-align:center; margin-bottom:22px; }
+
+  .titulo{
+    font-family:'Fascinate', cursive;
+    font-size: clamp(2.1rem, 9vw, 3rem);
+    color: var(--dorado);
+    text-shadow: 2px 2px 0 var(--rojo-oscuro), -1px -1px 0 rgba(0,0,0,.25);
+    letter-spacing: 1px;
+    margin: 0;
+    line-height:1.1;
+  }
+  .subtitulo{
+    font-family:'Alfa Slab One', cursive;
+    font-size: 0.8rem;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    color: var(--crema);
+    opacity:.8;
+    margin-top:6px;
+  }
+
+  .placa{
+    position:relative;
+    background: var(--crema);
+    color: var(--texto-oscuro);
+    border-radius: var(--radio);
+    padding: 26px 22px 24px;
+    box-shadow: var(--sombra);
+    border: 3px solid var(--rojo);
+    outline: 2px solid var(--dorado);
+    outline-offset: 6px;
+    margin-bottom: 26px;
+  }
+
+  .placa h2{
+    font-family:'Alfa Slab One', cursive;
+    font-size: 1.15rem;
+    color: var(--rojo-oscuro);
+    margin: 0 0 14px;
+    letter-spacing:.5px;
+  }
+
+  .campo{ margin-bottom: 16px; }
+  .campo label{
+    display:block;
+    font-weight:800;
+    font-size:.82rem;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    color: var(--rojo-oscuro);
+    margin-bottom:6px;
+  }
+  .ayuda{ font-size:.8rem; opacity:.7; margin-top:4px; }
+
+  input[type=text], select{
+    width:100%;
+    padding: 11px 12px;
+    border-radius: 12px;
+    border: 2px solid #d8c9a8;
+    background: #fffdf8;
+    color: var(--texto-oscuro);
+    font-family:'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight:600;
+  }
+  input[type=text]:focus, select:focus{
+    outline: none;
+    border-color: var(--rojo);
+  }
+
+  .fila-jugador{
+    display:flex;
+    gap:8px;
+    margin-bottom:8px;
+    align-items:center;
+  }
+  .fila-jugador input{ flex:1; }
+  .btn-icono{
+    flex-shrink:0;
+    width:40px; height:40px;
+    border-radius:10px;
+    border:2px solid #d8c9a8;
+    background:#fffdf8;
+    color: var(--rojo-oscuro);
+    font-size:1.1rem;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .btn-icono:hover{ background: var(--rojo); color:#fff; border-color:var(--rojo); }
+
+  .btn-agregar{
+    width:100%;
+    padding: 10px;
+    border-radius: 12px;
+    border: 2px dashed var(--rojo);
+    background: transparent;
+    color: var(--rojo-oscuro);
+    font-weight:800;
+    cursor:pointer;
+    margin-top:4px;
+  }
+  .btn-agregar:hover{ background: rgba(193,39,45,.08); }
+
+  .categorias{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .chip{
+    display:flex; align-items:center; gap:8px;
+    background:#fffdf8;
+    border:2px solid #d8c9a8;
+    border-radius: 12px;
+    padding: 9px 10px;
+    font-size:.85rem;
+    font-weight:700;
+    cursor:pointer;
+    user-select:none;
+  }
+  .chip input{ accent-color: var(--rojo); width:16px; height:16px; }
+  .chip.activo{ border-color: var(--verde); background: #eef6ee; }
+
+  .btn-primario{
+    width:100%;
+    padding: 15px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(180deg, var(--rojo), var(--rojo-oscuro));
+    color: #fff;
+    font-family:'Alfa Slab One', cursive;
+    letter-spacing: .5px;
+    font-size: 1.05rem;
+    cursor:pointer;
+    box-shadow: 0 6px 0 #6f1418, 0 10px 18px rgba(0,0,0,.35);
+    transition: transform .05s ease;
+  }
+  .btn-primario:active{ transform: translateY(4px); box-shadow: 0 2px 0 #6f1418; }
+  .btn-primario:disabled{ opacity:.5; cursor:not-allowed; box-shadow:none; }
+
+  .btn-secundario{
+    width:100%;
+    padding:12px;
+    border-radius:14px;
+    border: 2px solid var(--rojo);
+    background: transparent;
+    color: var(--rojo-oscuro);
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  .error-msg{
+    color: var(--rojo-oscuro);
+    font-weight:800;
+    font-size:.85rem;
+    margin-top:8px;
+    display:none;
+  }
+
+  .tarjeta-jugador{
+    background:#fffdf8;
+    border:2px solid #d8c9a8;
+    border-radius:14px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .tarjeta-jugador .nombre{
+    font-weight:800;
+    font-size:1rem;
+    color: var(--texto-oscuro);
+    margin-bottom:8px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .nombre .num{
+    background: var(--rojo);
+    color:#fff;
+    width:22px; height:22px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:.75rem;
+  }
+  .acciones-link{ display:flex; gap:8px; flex-wrap:wrap; }
+  .btn-mini{
+    flex:1;
+    min-width: 120px;
+    padding: 9px 10px;
+    border-radius: 10px;
+    border: 2px solid var(--verde);
+    background: #eef6ee;
+    color: var(--verde);
+    font-weight:800;
+    font-size:.82rem;
+    cursor:pointer;
+    text-decoration:none;
+    text-align:center;
+  }
+  .btn-mini.wsp{ border-color:#2e8b57; background:#e8f5ec; color:#1e6b3f; }
+  .btn-mini.copiado{ background: var(--verde); color:#fff; }
+
+  details.reglas{
+    background: rgba(247,238,221,.08);
+    border: 1px solid rgba(232,185,75,.35);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+  }
+  details.reglas summary{
+    cursor:pointer;
+    font-weight:800;
+    color: var(--dorado);
+    font-family:'Alfa Slab One', cursive;
+    font-size:.85rem;
+    letter-spacing:.4px;
+  }
+  details.reglas p, details.reglas li{ font-size:.88rem; line-height:1.5; opacity:.92; }
+  details.reglas ul{ padding-left:20px; margin:8px 0 0; }
+
+  footer.firma{
+    text-align:center;
+    font-size:.75rem;
+    opacity:.55;
+    margin-top: 10px;
+  }
+
+  /* ---------- vista jugador ---------- */
+  .contenedor-central{
+    min-height: 70vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+
+  .carta{
+    perspective: 1200px;
+    margin-bottom: 20px;
+  }
+  .carta-int{
+    position:relative;
+    width:100%;
+    min-height: 300px;
+    border-radius: 26px;
+    transition: transform .6s cubic-bezier(.4,.2,.2,1);
+    transform-style: preserve-3d;
+  }
+  .carta.revelada .carta-int{ transform: rotateY(180deg); }
+
+  .cara{
+    position:absolute; inset:0;
+    backface-visibility:hidden;
+    border-radius:26px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding: 28px 22px;
+  }
+  .cara-frente{
+    background: var(--crema);
+    border: 3px solid var(--dorado);
+    outline: 2px solid var(--rojo);
+    outline-offset:6px;
+    color: var(--texto-oscuro);
+  }
+  .cara-frente .escudo{ font-size: 3rem; margin-bottom:10px; }
+  .cara-frente .instr{ font-family:'Alfa Slab One', cursive; font-size:1.1rem; color:var(--rojo-oscuro); }
+  .cara-frente .instr2{ font-size:.85rem; opacity:.7; margin-top:8px; }
+
+  .cara-dorso{
+    transform: rotateY(180deg);
+    color: #fff;
+  }
+  .cara-dorso.crew{
+    background: linear-gradient(160deg, var(--verde), #2f5a33);
+    border: 3px solid var(--dorado);
+  }
+  .cara-dorso.impostor{
+    background: linear-gradient(160deg, var(--rojo), var(--rojo-oscuro));
+    border: 3px solid #2b2118;
+  }
+  .cara-dorso .eyebrow{
+    font-size:.78rem;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    opacity:.85;
+    font-weight:800;
+  }
+  .cara-dorso .palabra{
+    font-family:'Alfa Slab One', cursive;
+    font-size: clamp(1.6rem, 8vw, 2.4rem);
+    margin: 12px 0;
+    line-height:1.15;
+  }
+  .cara-dorso .categoria{
+    font-size:.85rem;
+    opacity:.85;
+    margin-top:4px;
+  }
+
+  .btn-revelar{
+    width:100%;
+    padding:16px;
+    border-radius:14px;
+    border:none;
+    background: linear-gradient(180deg, var(--dorado-suave), var(--dorado));
+    color: var(--texto-oscuro);
+    font-family:'Alfa Slab One', cursive;
+    font-size:1.05rem;
+    letter-spacing:.5px;
+    cursor:pointer;
+    box-shadow: 0 6px 0 #a9812a, 0 10px 18px rgba(0,0,0,.3);
+  }
+  .btn-revelar:active{ transform: translateY(3px); box-shadow:0 3px 0 #a9812a; }
+
+  .aviso-privado{
+    text-align:center;
+    font-size:.82rem;
+    opacity:.75;
+    margin-top:10px;
+  }
+
+  .oculto{ display:none !important; }
+
+  .ruleta-cont{
+    position:relative;
+    width: 260px;
+    max-width: 80vw;
+    margin: 4px auto 18px;
+  }
+  .ruleta-puntero{
+    position:absolute;
+    top:-14px; left:50%;
+    transform: translateX(-50%);
+    width:0; height:0;
+    border-left:14px solid transparent;
+    border-right:14px solid transparent;
+    border-top:22px solid var(--rojo-oscuro);
+    z-index:2;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,.4));
+  }
+  .ruleta-svg{
+    width:100%; height:auto;
+    display:block;
+    transition: transform 4s cubic-bezier(.17,.67,.16,1);
+    filter: drop-shadow(0 8px 14px rgba(0,0,0,.4));
+  }
+  .ruleta-resultado{
+    text-align:center;
+    font-family:'Alfa Slab One', cursive;
+    font-size:1.2rem;
+    color: var(--dorado);
+    min-height: 1.6em;
+    margin-top: 6px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .carta-int{ transition:none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+/* ===================== BANCO DE PALABRAS ===================== */
+const CATEGORIAS = {
+  comida: { label:"Comida y bebida", emoji:"🥟", palabras:[
+    "Asado","Choripán","Milanesa","Empanada","Locro","Mate","Fernet con coca",
+    "Dulce de leche","Alfajor","Facturas","Torta frita","Provoleta","Bife de chorizo",
+    "Chimichurri","Submarino","Vino tinto","Pizza a la piedra","Sanguche de miga",
+    "Pastelitos","Yerba mate","Chipá","Humita","Puchero","Ñoquis del 29","Vitel toné"
+  ]},
+  lugares: { label:"Lugares y cultura", emoji:"🗺️", palabras:[
+    "Obelisco","Cataratas del Iguazú","Bariloche","Mar del Plata","La Boca","Caminito",
+    "Puerto Madero","El Calafate","Ushuaia","Recoleta","Tigre","Villa Gesell","Pinamar",
+    "Salta la linda","Mendoza","Córdoba capital","Rosario","Perito Moreno","Quebrada de Humahuaca",
+    "Teatro Colón","Casa Rosada","Feria de Mataderos","San Telmo"
+  ]},
+  futbol: { label:"Fútbol y deporte", emoji:"⚽", palabras:[
+    "La Bombonera","El Monumental","Superclásico","Barra brava","Hinchada","Mundial 78",
+    "Mundial 86","Mundial 2022","Copa Libertadores","Gambeta","Arquero","Selección argentina",
+    "Camiseta albiceleste","Doble amarilla","Clásico rosarino","Scaloneta","Tercer tiempo"
+  ]},
+  jerga: { label:"Jerga y modismos", emoji:"🗣️", palabras:[
+    "Che","Boludo","Laburo","Quilombo","Bondi","Piba","Guita","Posta","Mango","Fiaca",
+    "Bardo","Zarpado","Chamuyo","Trucho","Copado","Pilcha","Vento","Chabón","Aguante",
+    "Al pedo","De taquito","Ni en pedo","Tirar buena onda"
+  ]},
+  objetos: { label:"Objetos cotidianos", emoji:"🧉", palabras:[
+    "Termo","Bombilla","Sifón de soda","Colectivo","Subte","Kiosco","Remis","Garrafa",
+    "Alpargatas","Boleto capicúa","Pava eléctrica","Yerbera","Facón","Poncho","Bolsa de dormir"
+  ]},
+  animales: { label:"Animales autóctonos", emoji:"🦎", palabras:[
+    "Yacaré","Ñandú","Guanaco","Carpincho","Hornero","Puma","Cóndor andino","Vizcacha",
+    "Tero","Zorro colorado","Aguará guazú","Yaguareté"
+  ]},
+  famosos: { label:"Personajes populares", emoji:"⭐", palabras:[
+    "Carlos Gardel","Charly García","Soda Stereo","Mirtha Legrand","Eva Perón",
+    "Julio Cortázar","Jorge Luis Borges","René Favaloro","Fito Páez","Mercedes Sosa",
+    "Manu Ginóbili","Gilda","Luis Landriscina"
+  ]}
+};
+
+/* ===================== HELPERS ===================== */
+function codificar(obj){
+  const json = JSON.stringify(obj);
+  return btoa(unescape(encodeURIComponent(json))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function decodificar(str){
+  let s = str.replace(/-/g,'+').replace(/_/g,'/');
+  while (s.length % 4) s += '=';
+  return JSON.parse(decodeURIComponent(escape(atob(s))));
+}
+function elegirAlAzar(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function barajar(arr){
+  const a = arr.slice();
+  for (let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function baseUrl(){
+  return location.origin + location.pathname;
+}
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ===================== VISTA: SELECCIÓN DE JUGADOR (un solo link para todos) ===================== */
+function renderVistaSeleccion(partida){
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <header class="hero">
+      <h1 class="titulo">El Impostor</h1>
+      <div class="subtitulo">Edición Argentina</div>
+    </header>
+    <div class="placa">
+      <h2>¿Quién sos vos?</h2>
+      <p class="ayuda" style="margin-top:-8px; margin-bottom:14px;">
+        Tocá tu nombre. Vas a ver solo tu carta, la de los demás queda oculta.
+      </p>
+      <div id="listaSeleccion"></div>
+    </div>
+    <details class="reglas">
+      <summary>¿Cómo se juega?</summary>
+      <ul>
+        <li>Todos ven la misma palabra, menos el/los impostor/es.</li>
+        <li>Por turnos, cada uno dice una palabra o pista relacionada, sin decir la palabra posta.</li>
+        <li>El impostor no sabe la palabra real: tiene la categoría y una palabra pista para disimular.</li>
+        <li>Después de una o dos rondas de pistas, todos votan quién creen que es el impostor.</li>
+        <li>Si lo descubren, ganan los demás. Si el impostor zafa o adivina la palabra, gana él.</li>
+      </ul>
+    </details>
+    <footer class="firma">Hecho para jugar entre amigos 🇦🇷</footer>
+  `;
+
+  const cont = document.getElementById('listaSeleccion');
+  cont.innerHTML = partida.j.map((jugador, i) => `
+    <button class="btn-secundario" style="margin-bottom:10px;" data-idx="${i}">
+      Soy ${escapeHtml(jugador.n)}
+    </button>
+  `).join('');
+
+  cont.querySelectorAll('[data-idx]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const jugador = partida.j[+btn.dataset.idx];
+      renderVistaJugador(
+        { n: jugador.n, r: jugador.r, c: partida.c, w: jugador.w, p: jugador.p },
+        () => renderVistaSeleccion(partida)
+      );
+    });
+  });
+}
+
+/* ===================== VISTA: JUGADOR (revela la carta) ===================== */
+function renderVistaJugador(datos, alVolver){
+  const app = document.getElementById('app');
+  const esImpostor = datos.r === 'i';
+  app.innerHTML = `
+    <header class="hero">
+      <h1 class="titulo">El Impostor</h1>
+      <div class="subtitulo">Edición Argentina</div>
+    </header>
+    ${alVolver ? `<button class="btn-secundario" id="btnVolver" style="margin-bottom:16px;">‹ No soy ${escapeHtml(datos.n)}</button>` : ''}
+    <div class="contenedor-central">
+      <div class="carta" id="carta">
+        <div class="carta-int">
+          <div class="cara cara-frente">
+            <div class="escudo">🕵️</div>
+            <div class="instr">Esta carta es para<br>${escapeHtml(datos.n)}</div>
+            <div class="instr2">Tocá el botón para ver tu rol.<br>Mostrale la pantalla solo a vos.</div>
+          </div>
+          <div class="cara cara-dorso ${esImpostor ? 'impostor':'crew'}">
+            ${esImpostor ? `
+              <div class="eyebrow">Sos el impostor</div>
+              <div class="palabra">🕵️ ¡Disimulá!</div>
+              <div class="categoria">Categoría: ${escapeHtml(datos.c)}</div>
+              <div class="categoria" style="margin-top:8px; font-weight:800;">Pista para disimular: ${escapeHtml(datos.p)}</div>
+            ` : `
+              <div class="eyebrow">Tu palabra secreta</div>
+              <div class="palabra">${escapeHtml(datos.w)}</div>
+              <div class="categoria">Categoría: ${escapeHtml(datos.c)}</div>
+            `}
+          </div>
+        </div>
+      </div>
+      <button class="btn-revelar" id="btnRevelar">Tocá para ver tu carta</button>
+      <div class="aviso-privado" id="avisoPrivado"></div>
+    </div>
+
+    <details class="reglas">
+      <summary>¿Cómo se juega?</summary>
+      <ul>
+        <li>Todos ven la misma palabra, menos el/los impostor/es.</li>
+        <li>Por turnos, cada uno dice una palabra o pista relacionada, sin decir la palabra posta.</li>
+        <li>El impostor no sabe la palabra real: tiene la categoría y una palabra pista para disimular.</li>
+        <li>Después de una o dos rondas de pistas, todos votan quién creen que es el impostor.</li>
+        <li>Si lo descubren, ganan los demás. Si el impostor zafa o adivina la palabra, gana él.</li>
+      </ul>
+    </details>
+    <footer class="firma">Hecho para jugar entre amigos 🇦🇷</footer>
+  `;
+
+  if (alVolver){
+    document.getElementById('btnVolver').addEventListener('click', alVolver);
+  }
+
+  const carta = document.getElementById('carta');
+  const btn = document.getElementById('btnRevelar');
+  const aviso = document.getElementById('avisoPrivado');
+  let revelada = false;
+  btn.addEventListener('click', () => {
+    revelada = !revelada;
+    carta.classList.toggle('revelada', revelada);
+    btn.textContent = revelada ? 'Ocultar de nuevo' : 'Tocá para ver tu carta';
+    aviso.textContent = revelada ? 'Ya la viste. Ocultala antes de pasar el celular.' : '';
+  });
+}
+
+/* ===================== VISTA: ANFITRIÓN ===================== */
+let jugadores = ['', '', ''];
+
+function renderVistaHost(){
+  const app = document.getElementById('app');
+  const catsHtml = Object.entries(CATEGORIAS).map(([key, cat]) => `
+    <label class="chip activo" data-cat="${key}">
+      <input type="checkbox" value="${key}" checked>
+      ${cat.emoji} ${cat.label}
+    </label>
+  `).join('');
+
+  app.innerHTML = `
+    <header class="hero">
+      <h1 class="titulo">El Impostor</h1>
+      <div class="subtitulo">Edición Argentina</div>
+    </header>
+
+    <details class="reglas">
+      <summary>¿Cómo se juega?</summary>
+      <ul>
+        <li>Todos los jugadores reciben la misma palabra secreta, menos el/los impostor/es.</li>
+        <li>Por turnos, cada uno dice una pista relacionada a la palabra, sin decirla.</li>
+        <li>El impostor no sabe la palabra (solo la categoría) y tiene que disimular.</li>
+        <li>Después de las pistas, todos votan quién creen que es el impostor.</li>
+        <li>Cargá los nombres, generá la partida y mandá el único link al grupo. Cada uno toca su nombre para ver su carta.</li>
+      </ul>
+    </details>
+
+    <div class="placa">
+      <h2>1. Jugadores</h2>
+      <div id="listaJugadores"></div>
+      <button class="btn-agregar" id="btnAgregarJugador">+ Agregar jugador</button>
+    </div>
+
+    <div class="placa">
+      <h2>2. Categorías</h2>
+      <div class="categorias" id="categorias">${catsHtml}</div>
+    </div>
+
+    <div class="placa">
+      <h2>3. Cantidad de impostores</h2>
+      <div class="campo">
+        <select id="cantImpostores"></select>
+        <div class="ayuda">Se eligen al azar entre los jugadores cargados.</div>
+      </div>
+    </div>
+
+    <button class="btn-primario" id="btnGenerar">Generar partida</button>
+    <div class="error-msg" id="errorMsg"></div>
+
+    <div id="resultado"></div>
+
+    <footer class="firma">Hecho para jugar entre amigos 🇦🇷 · sin servidores, todo en tu celular</footer>
+  `;
+
+  document.getElementById('btnAgregarJugador').addEventListener('click', () => {
+    jugadores.push('');
+    renderListaJugadores();
+  });
+
+  document.getElementById('categorias').addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    setTimeout(() => {
+      const input = chip.querySelector('input');
+      chip.classList.toggle('activo', input.checked);
+    }, 0);
+  });
+
+  document.getElementById('btnGenerar').addEventListener('click', generarPartida);
+
+  renderListaJugadores();
+  actualizarSelectImpostores();
+}
+
+function renderListaJugadores(){
+  const cont = document.getElementById('listaJugadores');
+  cont.innerHTML = jugadores.map((nombre, i) => `
+    <div class="fila-jugador">
+      <input type="text" placeholder="Nombre del jugador ${i+1}" value="${escapeHtml(nombre)}" data-idx="${i}" class="inputJugador" maxlength="24">
+      ${jugadores.length > 2 ? `<button class="btn-icono" data-del="${i}" title="Quitar">✕</button>` : ''}
+    </div>
+  `).join('');
+
+  cont.querySelectorAll('.inputJugador').forEach(inp => {
+    inp.addEventListener('input', (e) => {
+      jugadores[+e.target.dataset.idx] = e.target.value;
+      actualizarSelectImpostores();
+    });
+  });
+  cont.querySelectorAll('[data-del]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      jugadores.splice(+e.target.dataset.del, 1);
+      renderListaJugadores();
+      actualizarSelectImpostores();
+    });
+  });
+
+  actualizarSelectImpostores();
+}
+
+function actualizarSelectImpostores(){
+  const sel = document.getElementById('cantImpostores');
+  if (!sel) return;
+  const valorPrevio = sel.value;
+  const max = Math.max(1, jugadores.length - 2);
+  sel.innerHTML = '';
+  for (let i=1; i<=max; i++){
+    const op = document.createElement('option');
+    op.value = i;
+    op.textContent = i === 1 ? '1 impostor' : `${i} impostores`;
+    sel.appendChild(op);
+  }
+  if (valorPrevio && +valorPrevio <= max) sel.value = valorPrevio;
+}
+
+function generarPartida(){
+  const errorMsg = document.getElementById('errorMsg');
+  errorMsg.style.display = 'none';
+
+  const nombres = jugadores.map(n => n.trim()).filter(Boolean);
+  if (nombres.length < 3){
+    errorMsg.textContent = 'Cargá al menos 3 jugadores con nombre.';
+    errorMsg.style.display = 'block';
+    return;
+  }
+  const nombresUnicos = new Set(nombres.map(n => n.toLowerCase()));
+  if (nombresUnicos.size !== nombres.length){
+    errorMsg.textContent = 'Los nombres no pueden repetirse.';
+    errorMsg.style.display = 'block';
+    return;
+  }
+
+  const catsSeleccionadas = Array.from(document.querySelectorAll('#categorias input:checked')).map(i => i.value);
+  if (catsSeleccionadas.length === 0){
+    errorMsg.textContent = 'Elegí al menos una categoría.';
+    errorMsg.style.display = 'block';
+    return;
+  }
+
+  const cantImpostores = Math.min(+document.getElementById('cantImpostores').value, nombres.length - 2);
+
+  const catKey = elegirAlAzar(catsSeleccionadas);
+  const cat = CATEGORIAS[catKey];
+  const palabra = elegirAlAzar(cat.palabras);
+
+  const indicesImpostores = new Set(barajar(nombres.map((_,i)=>i)).slice(0, cantImpostores));
+  const decoysDisponibles = cat.palabras.filter(p => p !== palabra);
+
+  const listaJugadores = nombres.map((nombre, i) => {
+    const esImpostor = indicesImpostores.has(i);
+    return esImpostor
+      ? { n: nombre, r: 'i', p: elegirAlAzar(decoysDisponibles.length ? decoysDisponibles : cat.palabras) }
+      : { n: nombre, r: 'c', w: palabra };
+  });
+
+  const partida = { c: cat.label, j: listaJugadores };
+  const codigo = codificar(partida);
+  const url = `${baseUrl()}#/partida?d=${codigo}`;
+
+  renderResultado(url, nombres);
+}
+
+function renderResultado(url, nombres){
+  const cont = document.getElementById('resultado');
+  cont.innerHTML = `
+    <div class="placa">
+      <h2>Link listo 🎉</h2>
+      <p class="ayuda" style="margin-top:-6px; margin-bottom:14px;">
+        Mandá <strong>este único link</strong> al grupo (una sola vez). Cada uno lo abre desde su celu,
+        toca su propio nombre y ve solo su carta.
+      </p>
+      <div class="tarjeta-jugador">
+        <div class="acciones-link">
+          <a class="btn-mini wsp" target="_blank" rel="noopener"
+             href="https://wa.me/?text=${encodeURIComponent('🕵️ Arranca una partida del Impostor. Entrá, tocá tu nombre y mirá tu carta (nadie más la vea): '+url)}">
+             Enviar por WhatsApp
+          </a>
+          <button class="btn-mini" data-copiar="${escapeHtml(url)}">Copiar link</button>
+        </div>
+      </div>
+      <button class="btn-secundario" id="btnNuevaPartida" style="margin-top:6px;">Generar otra partida</button>
+    </div>
+
+    <div class="placa">
+      <h2>🎡 ¿Quién arranca la ronda?</h2>
+      <p class="ayuda" style="margin-top:-6px; margin-bottom:14px;">
+        Girá la ruleta para sortear quién dice la primera pista.
+      </p>
+      <div class="ruleta-cont">
+        <div class="ruleta-puntero"></div>
+        ${svgRuleta(nombres)}
+      </div>
+      <button class="btn-primario" id="btnGirarRuleta">Girar la ruleta</button>
+      <div class="ruleta-resultado" id="ruletaResultado"></div>
+    </div>
+  `;
+
+  let rotacionRuleta = 0;
+  const svgEl = document.getElementById('svgRuleta');
+  document.getElementById('btnGirarRuleta').addEventListener('click', () => {
+    const n = nombres.length;
+    const elegido = Math.floor(Math.random() * n);
+    const anguloPorSector = 360 / n;
+    const centroSector = elegido * anguloPorSector + anguloPorSector / 2;
+    const objetivoMod = (360 - centroSector) % 360;
+    const actualMod = ((rotacionRuleta % 360) + 360) % 360;
+    const delta = (objetivoMod - actualMod + 360) % 360;
+    const vueltasExtra = 5 * 360;
+    rotacionRuleta += delta + vueltasExtra;
+
+    document.getElementById('ruletaResultado').textContent = '';
+    svgEl.style.transform = `rotate(${rotacionRuleta}deg)`;
+
+    setTimeout(() => {
+      document.getElementById('ruletaResultado').textContent = `¡Arranca ${nombres[elegido]}! 🎉`;
+    }, 4000);
+  });
+
+  cont.querySelectorAll('[data-copiar]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      try{
+        await navigator.clipboard.writeText(btn.dataset.copiar);
+        btn.textContent = '¡Copiado!';
+        btn.classList.add('copiado');
+        setTimeout(() => { btn.textContent = 'Copiar link'; btn.classList.remove('copiado'); }, 1600);
+      }catch(e){
+        prompt('Copiá el link manualmente:', btn.dataset.copiar);
+      }
+    });
+  });
+
+  document.getElementById('btnNuevaPartida').addEventListener('click', generarPartida);
+
+  cont.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function svgRuleta(nombres){
+  const n = nombres.length;
+  const colores = ['#c1272d', '#e8b94b', '#16274a', '#4c7a50'];
+  const cx = 130, cy = 130, r = 122;
+  const anguloPorSector = 360 / n;
+
+  const sectores = nombres.map((nombre, i) => {
+    const inicio = i * anguloPorSector;
+    const fin = inicio + anguloPorSector;
+    const inicioRad = (inicio - 90) * Math.PI / 180;
+    const finRad = (fin - 90) * Math.PI / 180;
+    const x1 = cx + r * Math.cos(inicioRad);
+    const y1 = cy + r * Math.sin(inicioRad);
+    const x2 = cx + r * Math.cos(finRad);
+    const y2 = cy + r * Math.sin(finRad);
+    const grandeArco = anguloPorSector > 180 ? 1 : 0;
+    const color = colores[i % colores.length];
+
+    const anguloTexto = inicio + anguloPorSector / 2;
+    const textoRad = (anguloTexto - 90) * Math.PI / 180;
+    const rTexto = r * 0.62;
+    const tx = cx + rTexto * Math.cos(textoRad);
+    const ty = cy + rTexto * Math.sin(textoRad);
+    let rotTexto = anguloTexto;
+    if (rotTexto > 90 && rotTexto < 270) rotTexto += 180;
+
+    const nombreCorto = nombre.length > 12 ? nombre.slice(0, 11) + '…' : nombre;
+
+    return `
+      <path d="M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 ${grandeArco} 1 ${x2.toFixed(2)},${y2.toFixed(2)} Z"
+            fill="${color}" stroke="#f7eedd" stroke-width="2"/>
+      <text x="${tx.toFixed(2)}" y="${ty.toFixed(2)}" fill="#f7eedd" font-family="Nunito, sans-serif"
+            font-weight="800" font-size="${n > 8 ? 10 : 13}" text-anchor="middle"
+            transform="rotate(${rotTexto.toFixed(2)}, ${tx.toFixed(2)}, ${ty.toFixed(2)})">${escapeHtml(nombreCorto)}</text>
+    `;
+  }).join('');
+
+  return `
+    <svg id="svgRuleta" class="ruleta-svg" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="130" cy="130" r="126" fill="none" stroke="#e8b94b" stroke-width="6"/>
+      ${sectores}
+      <circle cx="130" cy="130" r="14" fill="#e8b94b" stroke="#2b2118" stroke-width="2"/>
+    </svg>
+  `;
+}
+
+/* ===================== ROUTER ===================== */
+function iniciar(){
+  const hash = location.hash;
+  if (hash.startsWith('#/partida')){
+    try{
+      const params = new URLSearchParams(hash.split('?')[1] || '');
+      const partida = decodificar(params.get('d'));
+      renderVistaSeleccion(partida);
+      return;
+    }catch(e){
+      document.getElementById('app').innerHTML = `
+        <div class="placa" style="margin-top:60px;">
+          <h2>Este link no es válido</h2>
+          <p>Pedile al anfitrión que te lo vuelva a mandar.</p>
+        </div>`;
+      return;
+    }
+  }
+  renderVistaHost();
+}
+
+window.addEventListener('hashchange', iniciar);
+iniciar();
+</script>
+</body>
+</html>
